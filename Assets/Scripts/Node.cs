@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -17,12 +18,6 @@ public class Node : MonoBehaviour
 
         _circleRenderer.color = new Color(_color.r,  _color.g, _color.b, 1f);
     }
-
-    public void SetPosition(Vector3 position)
-    {
-        transform.position = position;
-    }
-
     public void SetConnected()
     {
         IsConnected = true;
@@ -33,6 +28,17 @@ public class Node : MonoBehaviour
     {
         IsConnected = false;
         GameManager.Instance.SetDisconnected();
+    }
+
+    private void OnMouseDown()
+    {
+        LineCreator.Instance.StartDrawLine(transform.position, _circleRenderer.color);
+    }
+
+    private void OnMouseUp()
+    {
+        // 임시로 일단 upㄲㅏ지 여기서 
+       LineCreator.Instance.StopDrawLine();
     }
 
 }
