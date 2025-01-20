@@ -26,7 +26,7 @@ public class PlateManager : Singleton<PlateManager>
         {
             for(int j = 0; j < _maxRowPlatesNum; j++)
             {
-                Vector3 platePosition = new Vector3(_platesInitPos.x + _platesDistOffset * j, _platesInitPos.y + _platesDistOffset * i, 0f);
+                Vector3 platePosition = new Vector3(_platesInitPos.x + _platesDistOffset * j, _platesInitPos.y + _platesDistOffset * i, 1f);
                 Plate plate = Instantiate(_platePrefab, platePosition, Quaternion.identity, this.transform);
             }
         }
