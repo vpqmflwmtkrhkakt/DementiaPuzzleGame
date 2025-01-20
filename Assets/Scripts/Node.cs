@@ -11,6 +11,13 @@ public class Node : MonoBehaviour
 
     public bool IsConnected { get; private set; }
 
+    public bool IsSameColor(Color compareColor)
+    {
+        return _color == compareColor;
+    }
+
+    public Color GetNodeColor() { return _color; }
+
     private void Start()
     {
         _circleRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -30,9 +37,19 @@ public class Node : MonoBehaviour
         GameManager.Instance.SetDisconnected();
     }
 
+    private void OnMouseEnter()
+    {
+        LineCreator.Instance.SetLastEnteredNode(this);
+    }
+
+    private void OnMouseExit()
+    {
+        LineCreator.Instance.SetLastEnteredNode(null);
+    }
+
     private void OnMouseDown()
     {
-        LineCreator.Instance.StartDrawLine(transform.position, _circleRenderer.color);
+        LineCreator.Instance.StartDrawLine(transform.position, _circleRenderer.color, this);
     }
 
     private void OnMouseUp()
