@@ -8,6 +8,7 @@ public class Node : MonoBehaviour
     [SerializeField]
     private Color _color;
     private SpriteRenderer _circleRenderer;
+    private bool _isDrawing = false;
 
     public bool IsConnected { get; private set; }
 
@@ -28,13 +29,15 @@ public class Node : MonoBehaviour
     public void SetConnected()
     {
         IsConnected = true;
-        GameManager.Instance.SetConnected();
     }
 
     public void SetDisconnected()
     {
         IsConnected = false;
-        GameManager.Instance.SetDisconnected();
+
+        // 이거 추후 연결돼있던 라인 제거할때 써야할듯
+        // 이렇게하면 연결됐던 노드 두개가 호출해서 두번 호출됨 -> 한번만 호출되도록 해야함
+        // GameManager.Instance.SetDisconnected();
     }
 
     private void OnMouseEnter()
@@ -49,13 +52,24 @@ public class Node : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if(true == IsConnected)
+        {
+            return;
+        }
+
         LineCreator.Instance.StartDrawLine(transform.position, _circleRenderer.color, this);
+        _isDrawing = true;
     }
 
     private void OnMouseUp()
     {
+        if(false == _isDrawing)
+        {
+            return;
+        }
         // 임시로 일단 upㄲㅏ지 여기서 
        LineCreator.Instance.StopDrawLine();
+        _isDrawing = false;
     }
 
 }

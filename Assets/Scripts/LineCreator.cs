@@ -43,39 +43,55 @@ public class LineCreator : Singleton<LineCreator>
 
     private void CheckIsLinePlaceable()
     {
-        if(_lastEnteredNode == null)
-        {
-            if (_currentHoldingLine != null)
-            {
-                Destroy(_currentHoldingLine.gameObject);
-            }
-
-            return;
-        }
+        //if(_lastEnteredNode == null)
+        //{
+        //    if (_currentHoldingLine != null)
+        //    {
+        //        Destroy(_currentHoldingLine.gameObject);
+        //    }
+        //
+        //    return;
+        //}
 
         Node lineStartNode = _currentHoldingLine.GetLineStarterNode();
 
-
-        if(lineStartNode == _lastEnteredNode)
+        if(_lastEnteredNode != null)
         {
-            Debug.Log("You are Matching The Same Node");
-            Destroy(_currentHoldingLine.gameObject);
-            return;
-        }
+            if (lineStartNode == _lastEnteredNode)
+            {
+                Debug.Log("You are Matching The Same Node");
+                Destroy(_currentHoldingLine.gameObject);
+                return;
+            }
 
-        if(false == _lastEnteredNode.IsSameColor(_currentHoldingLine.GetLineStarterNode().GetNodeColor()))
+            if (true == _lastEnteredNode.IsConnected)
+            {
+                Debug.Log("Node is Already Matched");
+                Destroy(_currentHoldingLine.gameObject);
+                return;
+            }
+
+            if (false == _lastEnteredNode.IsSameColor(_currentHoldingLine.GetLineStarterNode().GetNodeColor()))
+            {
+                Debug.Log("The Color Is Differenet");
+                Destroy(_currentHoldingLine.gameObject);
+                return;
+            }
+
+            // 매칭 성공
+            _lastEnteredNode.SetConnected();
+            lineStartNode.SetConnected();
+            GameManager.Instance.SetConnected();
+        }
+        else
         {
-            Debug.Log("The Color Is Differenet");
-            Destroy(_currentHoldingLine.gameObject);
-            return;
-        }
 
+        }
 
         // TODO : 선과 선끼리 교차하는지 체크
+        // plate에 올려져있는지 여부로 판단하면 될듯?
 
 
-        // 매칭 성공
-        Debug.Log("The Color Is Matched");
     }
 
     private void Update()
