@@ -1,6 +1,5 @@
 using System;
 using TMPro;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 public class PlateUI : MonoBehaviour
@@ -15,16 +14,16 @@ public class PlateUI : MonoBehaviour
     void Start()
     {
         _rowField = transform.Find("RowField").GetComponent<TMP_InputField>();
-        Debugger.CheckInstanceIsNull(_rowField);
+        Debugger.CheckInstanceIsNullAndQuit(_rowField);
 
         _colField = transform.Find("ColumnField").GetComponent<TMP_InputField>();
-        Debugger.CheckInstanceIsNull(_colField);
+        Debugger.CheckInstanceIsNullAndQuit(_colField);
 
         _plateCreator = FindObjectOfType<PlateCreator>();
-        Debugger.CheckInstanceIsNull(_plateCreator);
+        Debugger.CheckInstanceIsNullAndQuit(_plateCreator);
 
         _createBtn = GetComponentInChildren<Button>();
-        Debugger.CheckInstanceIsNull(_createBtn);
+        Debugger.CheckInstanceIsNullAndQuit(_createBtn);
 
         _createBtn.onClick.AddListener(CreatePlates);
     }
@@ -38,7 +37,7 @@ public class PlateUI : MonoBehaviour
             return;
         }
 
-        Debugger.CheckInstanceIsNull(_plateCreator.gameObject);
+        Debugger.CheckInstanceIsNullAndQuit(_plateCreator.gameObject);
         _plateCreator.CreatePlates(row, col);
     }
 }

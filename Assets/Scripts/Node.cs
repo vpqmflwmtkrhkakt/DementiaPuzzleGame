@@ -22,7 +22,7 @@ public class Node : MonoBehaviour
     private void Start()
     {
         _circleRenderer = GetComponentInChildren<SpriteRenderer>();
-        Debugger.CheckInstanceIsNull(_circleRenderer);
+        Debugger.CheckInstanceIsNullAndQuit(_circleRenderer);
 
         _circleRenderer.color = new Color(_color.r,  _color.g, _color.b, 1f);
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlateCreator : MonoBehaviour
 {
     [SerializeField]
-    private Plate _platePrefab;
+    private ToolPlate _platePrefab;
     private readonly Int32 _platesDistOffset = 1;
     public void CreatePlates(Int32 row, Int32 col)
     {
@@ -32,7 +32,7 @@ public class PlateCreator : MonoBehaviour
             for (int j = 0; j < row; j++)
             {
                 Vector3 platePosition = new Vector3(platesInitPos.x + _platesDistOffset * j, platesInitPos.y + _platesDistOffset * i, 1f);
-                Plate plate = Instantiate(_platePrefab, platePosition, Quaternion.identity, this.transform).GetComponent<Plate>();
+                ToolPlate plate = Instantiate(_platePrefab, platePosition, Quaternion.identity, this.transform).GetComponent<ToolPlate>();
             }
         }
     }

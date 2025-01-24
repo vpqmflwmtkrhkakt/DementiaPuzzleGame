@@ -9,7 +9,7 @@ public class Line : MonoBehaviour
     {
         _lineRenderer = GetComponentInChildren<LineRenderer>();
 
-        Debugger.CheckInstanceIsNull( _lineRenderer );
+        Debugger.CheckInstanceIsNullAndQuit( _lineRenderer );
     }
 
     public Node GetLineStarterNode() 
