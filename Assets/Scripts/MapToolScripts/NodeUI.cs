@@ -5,7 +5,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class NodeUI : MonoBehaviour
 {
-    private Color _nodeColor;
     private Button _nodeColorBtn;
     private Button _nodeCreateBtn;
     private NodeCreator _nodeCreator;
@@ -27,7 +26,6 @@ public class NodeUI : MonoBehaviour
 
 
         _nodeColorPopupUI = transform.parent.Find("NodeColorUI").GetComponent<NodeColorUI>();
-
         Debugger.CheckInstanceIsNullAndQuit(_nodeColorPopupUI);
     }
 
@@ -39,13 +37,17 @@ public class NodeUI : MonoBehaviour
             return;
         }
 
-        _nodeColorPopupUI.gameObject.SetActive(true);
+
+        _nodeColorPopupUI.ActiveUI(this);
+    }
+
+    public void SetNodeColor(Color nodeColor)
+    {
+        _nodeColorBtn.image.color = nodeColor;
     }
     private void CreateNode()
     {
-        Color nodeColor = _nodeColor;
-
-        _nodeCreator.CreateNode(nodeColor);
+        _nodeCreator.CreateNode(_nodeColorBtn.image.color);
     }
 
 

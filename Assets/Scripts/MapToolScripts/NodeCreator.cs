@@ -21,6 +21,8 @@ public class NodeCreator : MonoBehaviour
         ToolNode node = Instantiate(_nodePrefab, Vector3.zero, Quaternion.identity, transform).GetComponent<ToolNode>();
         Debugger.CheckInstanceIsNullAndQuit(node);
 
+
+        node.SetColor(nodeColor);  
         _nodePlacer.StartPlaceNode(node);
     }
 }
