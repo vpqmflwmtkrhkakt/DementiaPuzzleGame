@@ -1,11 +1,12 @@
 using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.WSA;
 
 public class NodePlacer : Singleton<NodePlacer>
 {
     private ToolNode _holdingNode;
     private ToolPlate _focusingPlate;
-    private int _placeNodeCount;
+    private int _placeNodeCount = 2;
 
     public void StartPlaceNode(ToolNode newNode)
     {
@@ -38,6 +39,26 @@ public class NodePlacer : Singleton<NodePlacer>
         }
     }
 
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(1))
+        {
+            if(_holdingNode != null)
+            {
+                ToolNode siblingNode = _holdingNode.SiblingNode;
+                Destroy(_holdingNode.gameObject);
+
+                _holdingNode = null;
+
+                if(siblingNode != null)
+                {
+                    siblingNode.PlacedPlate.StartReplaceNode();
+                    _placeNodeCount = 2;
+                }
+            }
+        }
+    }
+
     public bool ReplaceNode(ToolNode node)
     {
         if(_holdingNode != null)
@@ -47,6 +68,11 @@ public class NodePlacer : Singleton<NodePlacer>
 
         _holdingNode = node;
         return true;
+    }
+
+    public bool IsHoldingNode()
+    {
+        return _holdingNode != null ? true : false;
     }
 
     public void PlaceHoldingNode()
@@ -64,9 +90,14 @@ public class NodePlacer : Singleton<NodePlacer>
         _focusingPlate.SetPlacedNode(_holdingNode);
         --_placeNodeCount;
 
+        Debug.Assert(_placeNodeCount >= 0);
+
         if(_placeNodeCount > 0)
         {
-            _holdingNode = Instantiate(_holdingNode);
+            ToolNode secondNode = Instantiate(_holdingNode);
+
+            secondNode.SiblingNode = _holdingNode;
+            _holdingNode = secondNode;
         }
         else
         {

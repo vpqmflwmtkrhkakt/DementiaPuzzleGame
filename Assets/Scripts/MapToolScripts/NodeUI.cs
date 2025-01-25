@@ -8,6 +8,7 @@ public class NodeUI : MonoBehaviour
     private Button _nodeColorBtn;
     private Button _nodeCreateBtn;
     private NodeCreator _nodeCreator;
+    private NodePlacer _nodePlacer;
     private NodeColorUI _nodeColorPopupUI;
     private void Start()
     {
@@ -24,6 +25,8 @@ public class NodeUI : MonoBehaviour
         _nodeCreator = FindObjectOfType<NodeCreator>();
         Debugger.CheckInstanceIsNullAndQuit(_nodeCreator);
 
+        _nodePlacer = GameObject.Find("NodePlacer").GetComponent<NodePlacer>();
+        Debug.Assert(_nodePlacer != null);
 
         _nodeColorPopupUI = transform.parent.Find("NodeColorUI").GetComponent<NodeColorUI>();
         Debugger.CheckInstanceIsNullAndQuit(_nodeColorPopupUI);
@@ -31,6 +34,11 @@ public class NodeUI : MonoBehaviour
 
     private void OpenNodeColorUI()
     {
+        if(_nodePlacer.IsHoldingNode() == true)
+        {
+            return;
+        }
+
         if(true == _nodeColorPopupUI.gameObject.activeSelf)
         {
             Debug.Log("already enabled");

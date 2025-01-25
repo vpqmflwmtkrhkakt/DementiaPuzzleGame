@@ -14,6 +14,15 @@ public class ToolPlate : MonoBehaviour
             Debug.Assert(_nodePlacer != null);
         }
     }
+
+    private void OnDestroy()
+    {
+        if(_placedNode != null)
+        {
+            Destroy(_placedNode.gameObject);
+        }
+    }
+
     private void OnMouseEnter()
     {
         _nodePlacer.SetFocusingPlate(this);
@@ -28,11 +37,7 @@ public class ToolPlate : MonoBehaviour
     {
         if (_placedNode != null)
         {
-            // 배치됐던 노드 재배치
-            if(_nodePlacer.ReplaceNode(_placedNode) == true)
-            {
-                _placedNode = null;
-            }
+            StartReplaceNode();
         }
         else
         {
@@ -60,5 +65,18 @@ public class ToolPlate : MonoBehaviour
         }
 
         _placedNode = node;
+        _placedNode.PlacedPlate = this;
+    }
+
+    public void StartReplaceNode()
+    {
+        if (_placedNode != null)
+        {
+            if (_nodePlacer.ReplaceNode(_placedNode) == true)
+            {
+                _placedNode.PlacedPlate = null;
+                _placedNode = null;
+            }
+        }
     }
 }

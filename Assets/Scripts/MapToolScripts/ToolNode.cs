@@ -6,6 +6,8 @@ public class ToolNode : MonoBehaviour
 {
     private Color _color;
     private SpriteRenderer _circleRenderer;
+    public ToolPlate PlacedPlate { get; set; }
+    public ToolNode SiblingNode { get; set; }
 
     public void SetColor(Color nodeColor)
     {
@@ -17,6 +19,5 @@ public class ToolNode : MonoBehaviour
         _circleRenderer = GetComponentInChildren<SpriteRenderer>();
         Debugger.CheckInstanceIsNullAndQuit(_circleRenderer);
     }
-
 
 }
