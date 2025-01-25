@@ -36,4 +36,20 @@ public class NodePlacer : Singleton<NodePlacer>
             }
         }
     }
+
+    public void PlaceHoldingNode()
+    {
+        if (_holdingNode == null || _focusingPlate == null)
+        {
+            return;
+        }
+
+        if(_focusingPlate.IsPlateEmpty() == false)
+        {
+            return;
+        }
+
+        _focusingPlate.SetPlacedNode(_holdingNode);
+        _holdingNode = null;
+    }
 }

@@ -19,6 +19,16 @@ public class ToolPlate : MonoBehaviour
         _nodePlacer.SetFocusingPlate(this);
     }
 
+    private void OnMouseExit()
+    {
+        _nodePlacer.SetFocusingPlate(null);
+    }
+
+    private void OnMouseDown()
+    {
+        _nodePlacer.PlaceHoldingNode();
+    }
+
     public bool IsPlateEmpty()
     {
         return _placedNode == null;
@@ -37,6 +47,8 @@ public class ToolPlate : MonoBehaviour
             Debug.Log("Plate's already Has a node");
             return;
         }
+
+        _placedNode = node;
     }
 
     public void RemovePlacedNode()
