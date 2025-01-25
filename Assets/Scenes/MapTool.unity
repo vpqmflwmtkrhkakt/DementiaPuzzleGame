@@ -919,7 +919,6 @@ GameObject:
   - component: {fileID: 405147247}
   - component: {fileID: 405147246}
   - component: {fileID: 405147248}
-  - component: {fileID: 405147249}
   m_Layer: 0
   m_Name: NodeColor
   m_TagString: Untagged
@@ -996,41 +995,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076435e6b97994b40841b386b301e7be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!58 &405147249
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405147244}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 1
 --- !u!1 &408656517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1317,7 +1281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &700748687
 RectTransform:
   m_ObjectHideFlags: 0

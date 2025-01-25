@@ -35,5 +35,4 @@ public class Line : MonoBehaviour
         _lineRenderer.SetPosition(0, startPos);
         _lineRenderer.SetPosition(1, endPos);
     }
-
 }
