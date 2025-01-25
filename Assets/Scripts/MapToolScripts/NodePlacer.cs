@@ -3,9 +3,8 @@ using UnityEngine;
 public class NodePlacer : Singleton<NodePlacer>
 {
     private ToolNode _holdingNode;
-
     private ToolPlate _focusingPlate;
-    private Vector3 _lastPosition = Vector3.zero;
+    private int _placeNodeCount;
 
     public void StartPlaceNode(ToolNode newNode)
     {
@@ -15,6 +14,7 @@ public class NodePlacer : Singleton<NodePlacer>
         }
 
         _holdingNode = newNode;
+        _placeNodeCount = 2;
     }
 
     public void SetFocusingPlate(ToolPlate plate)
@@ -50,6 +50,15 @@ public class NodePlacer : Singleton<NodePlacer>
         }
 
         _focusingPlate.SetPlacedNode(_holdingNode);
-        _holdingNode = null;
+        --_placeNodeCount;
+
+        if(_placeNodeCount > 0)
+        {
+            _holdingNode = Instantiate(_holdingNode);
+        }
+        else
+        {
+            _holdingNode = null;
+        }
     }
 }

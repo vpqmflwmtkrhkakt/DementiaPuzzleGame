@@ -25,4 +25,11 @@ public class NodeCreator : MonoBehaviour
         node.SetColor(nodeColor);  
         _nodePlacer.StartPlaceNode(node);
     }
+
+    public ToolNode DuplicateNode(ToolNode node)
+    {
+        Debug.Assert(node != null);
+
+        return Instantiate(node);
+    }
 }
