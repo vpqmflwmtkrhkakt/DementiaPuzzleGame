@@ -26,7 +26,18 @@ public class ToolPlate : MonoBehaviour
 
     private void OnMouseDown()
     {
-        _nodePlacer.PlaceHoldingNode();
+        if (_placedNode != null)
+        {
+            // 배치됐던 노드 재배치
+            if(_nodePlacer.ReplaceNode(_placedNode) == true)
+            {
+                _placedNode = null;
+            }
+        }
+        else
+        {
+            _nodePlacer.PlaceHoldingNode();
+        }
     }
 
     public bool IsPlateEmpty()
@@ -49,16 +60,5 @@ public class ToolPlate : MonoBehaviour
         }
 
         _placedNode = node;
-    }
-
-    public void RemovePlacedNode()
-    {
-        if(_placedNode == null)
-        {
-            return;
-        }
-
-        Destroy(_placedNode.gameObject);
-        _placedNode = null;
     }
 }

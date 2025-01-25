@@ -1,3 +1,4 @@
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class NodePlacer : Singleton<NodePlacer>
@@ -35,6 +36,17 @@ public class NodePlacer : Singleton<NodePlacer>
                 _holdingNode.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
             }
         }
+    }
+
+    public bool ReplaceNode(ToolNode node)
+    {
+        if(_holdingNode != null)
+        {
+            return false;
+        }
+
+        _holdingNode = node;
+        return true;
     }
 
     public void PlaceHoldingNode()
