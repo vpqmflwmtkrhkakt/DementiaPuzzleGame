@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +5,10 @@ public class PlateCreator : MonoBehaviour
 {
     [SerializeField]
     private ToolPlate _platePrefab;
-    private readonly Int32 _platesDistOffset = 1;
+    private readonly int _platesDistOffset = 1;
     public Vector2Int PlatesNum { get; private set; }
     private List<List<ToolPlate>> _plateList;
-    public void CreatePlates(Int32 row, Int32 col)
+    public void CreatePlates(int row, int col)
     {
         RemovePlates();
         PlacePlates(row, col);
@@ -18,8 +16,6 @@ public class PlateCreator : MonoBehaviour
     }
     private void RemovePlates()
     {
-        int childCount = transform.childCount;
-
         if (_plateList != null)
         {
             foreach (List<ToolPlate> subList in _plateList)
@@ -36,7 +32,7 @@ public class PlateCreator : MonoBehaviour
         }
     }
 
-    private void PlacePlates(Int32 row, Int32 col)
+    private void PlacePlates(int row, int col)
     {
         Vector3 platesInitPos = new Vector3((row - 1) * -0.5f, (col - 1) * -0.5f, 1f);
         _plateList = new List<List<ToolPlate>>();
@@ -47,22 +43,15 @@ public class PlateCreator : MonoBehaviour
             for (int j = 0; j < col; j++)
             {
                 Vector3 platePosition = new Vector3(platesInitPos.x + _platesDistOffset * j, platesInitPos.y + _platesDistOffset * i, 1f);
-                ToolPlate plate = Instantiate(_platePrefab, platePosition, Quaternion.identity, this.transform).GetComponent<ToolPlate>();
+                ToolPlate plate = Instantiate(_platePrefab, platePosition, Quaternion.identity).GetComponent<ToolPlate>();
                 _plateList[i].Add(plate);
             }
         }
     }
 
-    public List<ToolPlate> GetPlates()
+    public List<List<ToolPlate>> GetPlateList()
     {
-        List<ToolPlate> toolPlates = new List<ToolPlate>(transform.childCount);
-
-        for(int i = 0; i < transform.childCount; ++i)
-        {
-            toolPlates.Add(transform.GetChild(i).GetComponent<ToolPlate>());
-        }
-
-        return toolPlates;  
+        return _plateList;
     }
 
     public Vector2Int GetPlateIndex(Vector3 platePosition)

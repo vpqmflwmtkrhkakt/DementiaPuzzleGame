@@ -6,6 +6,11 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     private ushort _remainConnection;
+
+    private void Start()
+    {
+        LevelManager.Instance.LoadLevel("save");
+    }
     public void SetConnected()
     {
         if (_remainConnection > 0)
