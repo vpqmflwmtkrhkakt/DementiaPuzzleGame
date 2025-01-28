@@ -6,9 +6,8 @@ public class NodePlacer : Singleton<NodePlacer>
 {
     private ToolNode _holdingNode;
     private ToolPlate _focusingPlate;
-    private int _placeNodeCount = 2;
-
-    public void StartPlaceNode(ToolNode newNode)
+    private PlateCreator _plateCreator;
+    public void SetHoldingNode(ToolNode newNode)
     {
         if(newNode == null)
         {
@@ -16,7 +15,6 @@ public class NodePlacer : Singleton<NodePlacer>
         }
 
         _holdingNode = newNode;
-        _placeNodeCount = 2;
     }
 
     public void SetFocusingPlate(ToolPlate plate)
@@ -30,7 +28,8 @@ public class NodePlacer : Singleton<NodePlacer>
         {
             if (_focusingPlate != null)
             {
-                _holdingNode.transform.position = _focusingPlate.transform.position;
+                Vector3 holdingNodePos = new Vector3(_focusingPlate.transform.position.x, _focusingPlate.transform.position.y, 0f);
+                _holdingNode.transform.position = holdingNodePos;
             }
             else
             {
@@ -43,32 +42,50 @@ public class NodePlacer : Singleton<NodePlacer>
     {
         if(Input.GetMouseButtonDown(1))
         {
-            if(_holdingNode != null)
-            {
-                ToolNode siblingNode = _holdingNode.SiblingNode;
-                Destroy(_holdingNode.gameObject);
-
-                _holdingNode = null;
-
-                if(siblingNode != null)
-                {
-                    siblingNode.PlacedPlate.StartReplaceNode();
-                    _placeNodeCount = 2;
-                }
-            }
+            RemoveHoldingNode(_holdingNode);
         }
     }
 
-    public bool ReplaceNode(ToolNode node)
+    public void RemoveHoldingNode(ToolNode node)
     {
-        if(_holdingNode != null)
+        if(node == null)
         {
-            return false;
+            return;
         }
 
-        _holdingNode = node;
-        return true;
+        ToolNode siblingNode = _holdingNode.SiblingNode;
+        Destroy(_holdingNode.gameObject);
+
+        _holdingNode = null;
+
+        if (siblingNode != null)
+        {
+            siblingNode.PlacedPlate.StartReplaceNode();
+        }
     }
+
+    public void LoadNode(Vector2Int placeIndex, Vector2Int siblingNodeIndex, ToolNode placeNode)
+    {
+        if(_plateCreator == null)
+        {
+            _plateCreator = GameObject.Find("PlateCreator").GetComponent<PlateCreator>();
+            Debugger.CheckInstanceIsNullAndQuit(_plateCreator);
+        }
+
+        ToolPlate plate = _plateCreator.GetPlateByIndex(placeIndex);
+        plate.SetPlacedNode(placeNode);
+
+        ToolPlate siblingNodePlate = _plateCreator.GetPlateByIndex(siblingNodeIndex);
+        ToolNode siblingNode = siblingNodePlate.GetPlacedNode();
+
+        if (siblingNode != null)
+        {
+            siblingNode.SiblingNode = placeNode;
+            placeNode.SiblingNode = siblingNode;
+        }
+    }
+
+
 
     public bool IsHoldingNode()
     {
@@ -88,14 +105,13 @@ public class NodePlacer : Singleton<NodePlacer>
         }
 
         _focusingPlate.SetPlacedNode(_holdingNode);
-        --_placeNodeCount;
 
-        Debug.Assert(_placeNodeCount >= 0);
-
-        if(_placeNodeCount > 0)
+        if(_holdingNode.SiblingNode == null)
         {
             ToolNode secondNode = Instantiate(_holdingNode);
 
+            secondNode.SetColor(_holdingNode.GetColor());
+            _holdingNode.SiblingNode = secondNode;
             secondNode.SiblingNode = _holdingNode;
             _holdingNode = secondNode;
         }

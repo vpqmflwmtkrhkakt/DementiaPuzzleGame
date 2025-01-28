@@ -66,14 +66,22 @@ public class ToolPlate : MonoBehaviour
 
         _placedNode = node;
         _placedNode.PlacedPlate = this;
+        _placedNode.transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
+    }
+
+    public ToolNode GetPlacedNode()
+    {
+        return _placedNode;
     }
 
     public void StartReplaceNode()
     {
         if (_placedNode != null)
         {
-            if (_nodePlacer.ReplaceNode(_placedNode) == true)
+            if(_nodePlacer.IsHoldingNode() == false)
             {
+                _nodePlacer.SetHoldingNode(_placedNode);
+
                 _placedNode.PlacedPlate = null;
                 _placedNode = null;
             }

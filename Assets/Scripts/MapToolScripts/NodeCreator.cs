@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NodeCreator : MonoBehaviour
@@ -27,8 +25,17 @@ public class NodeCreator : MonoBehaviour
         ToolNode node = Instantiate(_nodePrefab, Vector3.zero, Quaternion.identity, null).GetComponent<ToolNode>();
         Debugger.CheckInstanceIsNullAndQuit(node);
 
-
         node.SetColor(nodeColor);  
-        _nodePlacer.StartPlaceNode(node);
+        _nodePlacer.SetHoldingNode(node);
     }
+
+    public void LoadNode(Vector2Int placeIndex, Vector2Int siblingIndex, Color nodeColor)
+    {
+        ToolNode node = Instantiate(_nodePrefab, Vector3.zero, Quaternion.identity, null).GetComponent<ToolNode>();
+        Debugger.CheckInstanceIsNullAndQuit(node);
+
+        node.SetColor(nodeColor);
+        _nodePlacer.LoadNode(placeIndex, siblingIndex, node);
+    }
+
 }

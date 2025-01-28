@@ -14,6 +14,9 @@ public class ToolNode : MonoBehaviour
         _color = nodeColor;
         _circleRenderer.color = new Color(_color.r, _color.g, _color.b, 1f);
     }
+
+    public Color GetColor() { return _color; }
+
     private void Awake()
     {
         _circleRenderer = GetComponentInChildren<SpriteRenderer>();
