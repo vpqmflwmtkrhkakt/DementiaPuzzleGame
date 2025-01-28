@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class Debugger : Singleton<Debugger>
 {
-    public static void CheckInstanceIsNull(Object obj)
+    public static void CheckInstanceIsNullAndQuit(Object obj)
     {
         if(obj == null)
         {
-            Debug.LogError(obj.name + "is Null");
+            Debug.LogError(obj.name + "is null");
+            Application.Quit();
         }
     }
 }

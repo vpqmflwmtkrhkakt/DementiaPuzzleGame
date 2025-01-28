@@ -9,7 +9,7 @@ public class Line : MonoBehaviour
     {
         _lineRenderer = GetComponentInChildren<LineRenderer>();
 
-        Debugger.CheckInstanceIsNull( _lineRenderer );
+        Debugger.CheckInstanceIsNullAndQuit( _lineRenderer );
     }
 
     public Node GetLineStarterNode() 
@@ -35,5 +35,4 @@ public class Line : MonoBehaviour
         _lineRenderer.SetPosition(0, startPos);
         _lineRenderer.SetPosition(1, endPos);
     }
-
 }

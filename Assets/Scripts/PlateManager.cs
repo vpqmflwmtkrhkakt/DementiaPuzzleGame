@@ -15,7 +15,7 @@ public class PlateManager : Singleton<PlateManager>
 
     private void Start()
     {
-        Debugger.CheckInstanceIsNull(_platePrefab);
+        Debugger.CheckInstanceIsNullAndQuit(_platePrefab);
 
         PlacePlates();
     }
