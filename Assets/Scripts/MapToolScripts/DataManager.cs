@@ -76,23 +76,26 @@ public class DataManager : Singleton<DataManager>
 
         wrapper.SetPlateNums(_plateCreator.PlatesNum);
 
-        List<ToolPlate> plateList = _plateCreator.GetPlates();
+        List<List<ToolPlate>> plateList = _plateCreator.GetPlateList();
 
-        foreach (ToolPlate plate in plateList)
+        foreach (List<ToolPlate> list in plateList)
         {
-            ToolNode node = plate.GetPlacedNode();
-
-            if(node != null)
+            foreach (ToolPlate plate in list)
             {
-                Vector2Int nodeIndex = _plateCreator.GetPlateIndex(plate.transform.position);
-                Vector2Int siblingIndex = _plateCreator.GetPlateIndex(node.SiblingNode.transform.position);
-                Color nodeColor = node.GetColor();
-                wrapper.AddSaveData(nodeIndex, siblingIndex, nodeColor);
-            }
-        }
+                ToolNode node = plate.GetPlacedNode();
 
-        string jsonData = JsonUtility.ToJson(wrapper);
-        File.WriteAllText(saveFilePath, jsonData);
+                if (node != null)
+                {
+                    Vector2Int nodeIndex = _plateCreator.GetPlateIndex(plate.transform.position);
+                    Vector2Int siblingIndex = _plateCreator.GetPlateIndex(node.SiblingNode.transform.position);
+                    Color nodeColor = node.GetColor();
+                    wrapper.AddSaveData(nodeIndex, siblingIndex, nodeColor);
+                }
+            }
+
+            string jsonData = JsonUtility.ToJson(wrapper);
+            File.WriteAllText(saveFilePath, jsonData);
+        }
     }
 
     public void LoadMap(string saveFileName)

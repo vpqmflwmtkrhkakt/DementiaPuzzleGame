@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    [SerializeField]
     private Color _color;
     private SpriteRenderer _circleRenderer;
     private bool _isDrawing = false;
@@ -18,7 +17,7 @@ public class Node : MonoBehaviour
     }
 
     public Color GetNodeColor() { return _color; }
-
+    public void SetNodeColor(Color color) { _color = color; } 
     private void Start()
     {
         _circleRenderer = GetComponentInChildren<SpriteRenderer>();
