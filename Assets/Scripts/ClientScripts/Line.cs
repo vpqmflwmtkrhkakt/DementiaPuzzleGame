@@ -4,7 +4,6 @@ public class Line : MonoBehaviour
 {
     private LineRenderer _lineRenderer;
     private Node _lineStarterNode;
-
     private void Awake()
     {
         _lineRenderer = GetComponentInChildren<LineRenderer>();
