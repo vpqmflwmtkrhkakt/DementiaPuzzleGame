@@ -9,10 +9,14 @@ public class NodeLoader
         _nodePrefab = nodePrefab;
     }
 
-    public void LoadNode(Vector3 nodePos, Color nodeColor)
+    public void LoadNode(Plate plate, Color nodeColor)
     {
-        Node node = UnityEngine.GameObject.Instantiate(_nodePrefab, nodePos, Quaternion.identity).GetComponent<Node>();
+        Vector3 nodePos = plate.transform.position;
+        nodePos.z = 0f;
 
+        Node node = UnityEngine.GameObject.Instantiate(_nodePrefab, nodePos, Quaternion.identity).GetComponent<Node>();
         node.SetNodeColor(nodeColor);
+
+        plate.PlacedNode = node;
     }
 }

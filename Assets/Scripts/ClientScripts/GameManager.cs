@@ -5,13 +5,23 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    private ushort _remainConnection;
+    private uint _remainConnection;
 
     private void Start()
     {
         LevelManager.Instance.LoadLevel("save");
     }
-    public void SetConnected()
+
+    public void InitRemainConnectionCount(uint remainConnection)
+    {
+        _remainConnection = remainConnection;
+    }
+
+    public bool IsGameCleared()
+    {
+        return _remainConnection == 0;
+    }
+    public void MinusRemainingConnectionCount()
     {
         if (_remainConnection > 0)
         {
@@ -19,14 +29,12 @@ public class GameManager : Singleton<GameManager>
 
             if (_remainConnection == 0)
             {
-                // 게임 클리어
-                Debug.Log("Game Clear!");
-                // TODO : 게임 클리어 UI 띄우도록
+                UIManager.Instance.PopupUI("GameClearUI");
             }
         }
     }
 
-    public void SetDisconnected()
+    public void AddRemainingConnectionCount()
     {
         ++_remainConnection;
     }

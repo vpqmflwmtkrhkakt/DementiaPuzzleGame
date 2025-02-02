@@ -38,8 +38,6 @@ public class LevelManager : Singleton<LevelManager>
             LoadPlates(wrapper);
             LoadNode(wrapper);
         }
-
-
     }
     private void LoadPlates(SaveDataWrapper wrapper)
     {
@@ -54,10 +52,11 @@ public class LevelManager : Singleton<LevelManager>
 
         foreach (NodeData data in dataList)
         {
-            Vector3 nodePos = _plateLoader.GetPlateByIndex(data.NodeIndex).transform.position;
-            nodePos.z = 0f;
+            Plate plate = _plateLoader.GetPlateByIndex(data.NodeIndex);
 
-            _nodeLoader.LoadNode(nodePos, data.NodeColor);
+            _nodeLoader.LoadNode(plate, data.NodeColor);
         }
+
+        GameManager.Instance.InitRemainConnectionCount((uint)(dataList.Count / 2));
     }
 }

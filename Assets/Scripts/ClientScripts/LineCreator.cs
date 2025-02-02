@@ -1,22 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class LineCreator : Singleton<LineCreator>
 {
-    public bool IsOkToDrawLine { get; private set; }
     public Vector3 LineStartPos { get; private set; }
 
     [SerializeField]
     private Line _linePrefab;
     private Line _currentHoldingLine;
-    private Node _lastEnteredNode;
     private Vector3 _lastMousePos = Vector3.zero;
     private Vector3 _lastLineEndPos;
 
-    public void SetLastEnteredNode(Node node)
+    public void PlaceMidLine(Plate plate)
     {
-        _lastEnteredNode = node;
+        if(_currentHoldingLine == null)
+        {
+            return;
+        }
+        if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
+        {
+            _currentHoldingLine.AddEnteredPlate(plate);
+        }
+    }
+
+    public void DisplaceMidLine(Plate plate)
+    {
+        if(_currentHoldingLine == null)
+        {
+            return;
+        }
+        // 현재 그리는 방향과 역방향이면 Remove
+        // 역방향 판단은 내적으로
+        if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
+        {
+            _currentHoldingLine.RemoveEnteredPlate(plate);
+        }
     }
 
     public void StartDrawLine(Vector3 lineStartPos, Color lineColor, Node lineStarterNode)
@@ -27,76 +47,98 @@ public class LineCreator : Singleton<LineCreator>
             return;
         }
         LineStartPos = lineStartPos;
-        IsOkToDrawLine = true;
 
         _currentHoldingLine = Instantiate(_linePrefab, lineStartPos, Quaternion.identity, transform).GetComponent<Line>();
         _currentHoldingLine.SetLineStarterNode(lineStarterNode);
         _currentHoldingLine.SetLineColor(lineColor);
+
+        if(lineStarterNode.DrawingLine == null)
+        {
+            lineStarterNode.ConnectLine(_currentHoldingLine);
+        }
     }
     public void StopDrawLine()
     {
-        LineStartPos = Vector3.zero;
-        IsOkToDrawLine = false;
-
-        CheckIsLinePlaceable();
-    }
-
-    private void CheckIsLinePlaceable()
-    {
-        //if(_lastEnteredNode == null)
-        //{
-        //    if (_currentHoldingLine != null)
-        //    {
-        //        Destroy(_currentHoldingLine.gameObject);
-        //    }
-        //
-        //    return;
-        //}
-
-        Node lineStartNode = _currentHoldingLine.GetLineStarterNode();
-
-        if(_lastEnteredNode != null)
+        if(_currentHoldingLine == null)
         {
-            if (lineStartNode == _lastEnteredNode)
-            {
-                Debug.Log("You are Matching The Same Node");
-                Destroy(_currentHoldingLine.gameObject);
-                return;
-            }
+            return;
+        }
 
-            if (true == _lastEnteredNode.IsConnected)
-            {
-                Debug.Log("Node is Already Matched");
-                Destroy(_currentHoldingLine.gameObject);
-                return;
-            }
+        LineStartPos = Vector3.zero;
 
-            if (false == _lastEnteredNode.IsSameColor(_currentHoldingLine.GetLineStarterNode().GetNodeColor()))
-            {
-                Debug.Log("The Color Is Differenet");
-                Destroy(_currentHoldingLine.gameObject);
-                return;
-            }
-
-            // 매칭 성공
-            _lastEnteredNode.SetConnected();
-            lineStartNode.SetConnected();
-            GameManager.Instance.SetConnected();
+        if (CheckIsLinePlaceable() == false)
+        {
+            // Fix : 추후 라인들은 메모리풀로 재사용할수있도록 ㄱㄱ
+            Destroy(_currentHoldingLine.gameObject);
         }
         else
         {
+            PlaceCurrentLine();
+        }
+        _currentHoldingLine = null;
+    }
+    private void PlaceCurrentLine()
+    {
+        // Line 실제 배치
+        Plate focusedPlate = Plate.CurrentFocusedPlate;
 
+        _currentHoldingLine.PlaceLineToMidPlates();
+        focusedPlate.PlaceEndLine(_currentHoldingLine);
+    }
+
+    private bool CheckIsLinePlaceable()
+    {
+        // 현재 놓으려는 plate와 관련된 조건검사부터 실행
+        Plate focusedPlate = Plate.CurrentFocusedPlate;
+
+        if(focusedPlate == null)
+        {
+            return false;
         }
 
-        // TODO : 선과 선끼리 교차하는지 체크
-        // plate에 올려져있는지 여부로 판단하면 될듯?
+        // plate에 놓으면 안될 조건
+        // 1. 이미 해당 plate에 라인이 깔려있다
+        // 2. plate에 놓인 node와 색이 다르다
+        // 3. plate에 놓인 line과 색이 다르다
 
+        // placed된 node가 있는 경우,
+        // 1. 색을 비교
+        // 2. 동일한 노드와 비교중인지 체크
 
+        Node placedNode = focusedPlate.PlacedNode;
+
+        if (placedNode == null)
+        {
+            Line placedLine = focusedPlate.PlacedLine;
+
+            if(placedLine == null)
+            {
+                return true;
+            }
+
+            if(placedLine.IsEndOfLine(focusedPlate.transform.position) == false)
+            {
+                return false;
+            }
+
+            return placedLine.GetLineStarterNode().IsSameColor(_currentHoldingLine.GetLineStarterNode().GetNodeColor());
+        }
+        else
+        {
+            Node lineStartNode = _currentHoldingLine.GetLineStarterNode();
+
+            if (lineStartNode == placedNode)
+            {
+                return false;
+            }
+
+            return placedNode.IsSameColor(lineStartNode.GetNodeColor());
+        }
     }
 
     private void Update()
     {
-        if(true == IsOkToDrawLine)
+        if(_currentHoldingLine != null)
         {
             DrawLine();
         }
@@ -141,4 +183,5 @@ public class LineCreator : Singleton<LineCreator>
 
         return lineEndPos;
     }
+
 }
