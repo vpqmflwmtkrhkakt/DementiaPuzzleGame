@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class Plate : MonoBehaviour
@@ -9,6 +8,20 @@ public class Plate : MonoBehaviour
 
     public static Plate CurrentFocusedPlate { get; private set; }
 
+    [SerializeField]
+    private TextMeshPro _debugText;
+
+    private void Update()
+    {
+        if(PlacedLine == null)
+        {
+            _debugText.text = "null";
+        }
+        else
+        {
+            _debugText.text = "line";
+        }
+    }
     private void OnMouseEnter()
     {
         CurrentFocusedPlate = this;
@@ -34,7 +47,6 @@ public class Plate : MonoBehaviour
         // 1. 노드
         // 2. 연결된 라인의 맨 끝지점일경우
         // -> 선을 그리기 시작한다.
-        // Fix : PlacedNode, PlacedLine 둘 다 하나의 인터페이스를 상속받도록 만든다면 관리하기 더 편해질듯
         if (PlacedNode != null)
         {
             if(PlacedNode.DrawingLine != null)
@@ -42,12 +54,12 @@ public class Plate : MonoBehaviour
                 return;
             }
 
-            LineCreator.Instance.StartDrawLine(transform.position, PlacedNode.GetNodeColor(), PlacedNode);
+            LineCreator.Instance.StartDrawLine(transform.position, PlacedNode);
         }
         else if (PlacedLine != null && PlacedLine.IsEndOfLine(transform.position) == true)
         {
             Node startNode = PlacedLine.GetLineStarterNode();
-            LineCreator.Instance.StartDrawLine(transform.position, startNode.GetNodeColor(), startNode);
+            LineCreator.Instance.StartDrawLine(transform.position, startNode);
         }
     }
 

@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
     private uint _remainConnection;
+    public Action OnGameCleared;
 
     private void Start()
     {
@@ -29,12 +27,12 @@ public class GameManager : Singleton<GameManager>
 
             if (_remainConnection == 0)
             {
-                UIManager.Instance.PopupUI("GameClearUI");
+                OnGameCleared?.Invoke();
             }
         }
     }
 
-    public void AddRemainingConnectionCount()
+    public void PlusRemainingConnectionCount()
     {
         ++_remainConnection;
     }

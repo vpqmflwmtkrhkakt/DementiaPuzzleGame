@@ -27,9 +27,15 @@ public class UIManager : Singleton<UIManager>
         foreach (UIBase uiPrefab in _uiPrefabList)
         {
             UIBase ui = Instantiate(uiPrefab, _uiCanvas.transform);
-            ui.CloseUI();
 
             _uiContainer.Add(uiPrefab.name, ui);
         }
+
+        GameManager.Instance.OnGameCleared += GameCleared;
+    }
+
+    private void GameCleared()
+    {
+        PopupUI("GameClearUI");
     }
 }

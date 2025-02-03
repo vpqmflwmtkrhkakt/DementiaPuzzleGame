@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LineCreator : Singleton<LineCreator>
@@ -9,7 +10,18 @@ public class LineCreator : Singleton<LineCreator>
     private Line _currentHoldingLine;
     private Vector3 _lastMousePos = Vector3.zero;
     private Vector3 _lastLineEndPos;
+    private LinkedList<Line> _placedLineChain = new LinkedList<Line>();
 
+    private void Start()
+    {
+        GameManager.Instance.OnGameCleared += ResetLineCreator;
+    }
+    private void ResetLineCreator()
+    {
+        _currentHoldingLine = null;
+        _lastLineEndPos = Vector3.zero;
+        _placedLineChain.Clear();
+    }
     public void AddPlateToMidlineList(Plate plate)
     {
         if(_currentHoldingLine == null)
@@ -51,7 +63,7 @@ public class LineCreator : Singleton<LineCreator>
         }
     }
 
-    public void StartDrawLine(Vector3 lineStartPos, Color lineColor, Node lineStarterNode)
+    public void StartDrawLine(Vector3 lineStartPos, Node lineStarterNode)
     {
         if(lineStarterNode == null)
         {
@@ -62,7 +74,7 @@ public class LineCreator : Singleton<LineCreator>
 
         _currentHoldingLine = Instantiate(_linePrefab, lineStartPos, Quaternion.identity, transform).GetComponent<Line>();
         _currentHoldingLine.SetLineStarterNode(lineStarterNode);
-        _currentHoldingLine.SetLineColor(lineColor);
+        _currentHoldingLine.SetLineColor(lineStarterNode.GetNodeColor());
 
         if(lineStarterNode.DrawingLine == null)
         {
@@ -87,6 +99,7 @@ public class LineCreator : Singleton<LineCreator>
         {
             PlaceCurrentLine();
         }
+
         _currentHoldingLine = null;
     }
     private void PlaceCurrentLine()
@@ -96,6 +109,8 @@ public class LineCreator : Singleton<LineCreator>
 
         _currentHoldingLine.PlaceLineToMidPlates();
         focusedPlate.PlaceEndLine(_currentHoldingLine);
+
+        _placedLineChain.AddLast(_currentHoldingLine);
     }
 
     private bool CheckIsLinePlaceable()
@@ -200,4 +215,19 @@ public class LineCreator : Singleton<LineCreator>
         return lineEndPos;
     }
 
+    public void RemoveLastPlacedLine()
+    {
+        if(_placedLineChain.Count == 0)
+        {
+            return;
+        }
+
+        Line removeLine = _placedLineChain.Last.Value;
+
+        // placedLine 모두 Displaced해야
+        // 연결되었던 node들 다시 disconnected해야
+
+        _placedLineChain.RemoveLast();
+        Destroy(removeLine.gameObject);
+    }
 }
