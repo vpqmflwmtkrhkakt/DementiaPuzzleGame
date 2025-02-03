@@ -127,9 +127,14 @@ public class Line : MonoBehaviour
 
     private void OnDisable()
     {
+        _lineStarterNode = null;
+        _passedPlacedLinePlateCount = 0;
+
         foreach (Plate midplate in _enteredPlateList)
         {
             midplate.ClearMidLine();
         }
+
+        _enteredPlateList.Clear();
     }
 }
