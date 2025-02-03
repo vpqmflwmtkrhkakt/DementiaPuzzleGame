@@ -87,7 +87,12 @@ public class Plate : MonoBehaviour
     public void PlaceEndLine(Line line)
     {
         Debug.Assert(line != null, "Placing line is null!");
-        PlacedLine = line;
+
+        if(PlacedLine == null)
+        {
+            PlacedLine = line;
+        }
+
         line.SetLineEndPosition(new Vector3(transform.position.x, transform.position.y, 0f));
 
         if(PlacedNode != null)
