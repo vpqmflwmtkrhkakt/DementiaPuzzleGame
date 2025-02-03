@@ -13,9 +13,9 @@ public class Plate : MonoBehaviour
     {
         CurrentFocusedPlate = this;
 
-        if (PlacedLine == null && PlacedNode == null)
+        if(PlacedNode == null)
         {
-            LineCreator.Instance.PlaceMidLine(this);
+            LineCreator.Instance.AddPlateToMidlineList(this);
         }
     }
 
@@ -25,7 +25,7 @@ public class Plate : MonoBehaviour
 
         if (PlacedLine == null && PlacedNode == null)
         {
-            LineCreator.Instance.DisplaceMidLine(this);
+            LineCreator.Instance.RemovePlateFromMidlineList(this);
         }
     }
 

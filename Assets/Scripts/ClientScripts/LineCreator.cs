@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class LineCreator : Singleton<LineCreator>
@@ -13,19 +10,27 @@ public class LineCreator : Singleton<LineCreator>
     private Vector3 _lastMousePos = Vector3.zero;
     private Vector3 _lastLineEndPos;
 
-    public void PlaceMidLine(Plate plate)
+    public void AddPlateToMidlineList(Plate plate)
     {
         if(_currentHoldingLine == null)
         {
             return;
         }
+
         if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
         {
-            _currentHoldingLine.AddEnteredPlate(plate);
+            if (plate.PlacedLine != null)
+            {
+                _currentHoldingLine.AddPassedPlacedLinePlateCount();
+            }
+            else
+            {
+                _currentHoldingLine.AddEnteredPlate(plate);
+            }
         }
     }
 
-    public void DisplaceMidLine(Plate plate)
+    public void RemovePlateFromMidlineList(Plate plate)
     {
         if(_currentHoldingLine == null)
         {
@@ -35,7 +40,14 @@ public class LineCreator : Singleton<LineCreator>
         // 역방향 판단은 내적으로
         if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
         {
-            _currentHoldingLine.RemoveEnteredPlate(plate);
+            if (plate.PlacedLine != null)
+            {
+                _currentHoldingLine.MinusPassedPlacedLinePlateCount();
+            }
+            else
+            {
+                _currentHoldingLine.RemoveEnteredPlate(plate);
+            }
         }
     }
 
@@ -104,6 +116,10 @@ public class LineCreator : Singleton<LineCreator>
         // placed된 node가 있는 경우,
         // 1. 색을 비교
         // 2. 동일한 노드와 비교중인지 체크
+        if(_currentHoldingLine.IsOkToPlaceMidline() == false)
+        {
+            return false;
+        }
 
         Node placedNode = focusedPlate.PlacedNode;
 

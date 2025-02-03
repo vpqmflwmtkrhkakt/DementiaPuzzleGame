@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Line : MonoBehaviour
@@ -6,6 +7,7 @@ public class Line : MonoBehaviour
     private LineRenderer _lineRenderer;
     private Node _lineStarterNode;
     private LinkedList<Plate> _enteredPlateList;
+    private uint _passedPlacedLinePlateCount = 0;
     private void Awake()
     {
         _lineRenderer = GetComponentInChildren<LineRenderer>();
@@ -13,6 +15,46 @@ public class Line : MonoBehaviour
         Debugger.CheckInstanceIsNullAndQuit( _lineRenderer );
 
         _enteredPlateList = new LinkedList<Plate>();
+    }
+    public void AddPassedPlacedLinePlateCount() 
+    {
+        _passedPlacedLinePlateCount++; 
+    }
+    public void MinusPassedPlacedLinePlateCount() 
+    { 
+        _passedPlacedLinePlateCount--; 
+        Debug.Assert(_passedPlacedLinePlateCount >= 0, "passedPlateCount underflowed!"); 
+    }
+
+    public bool IsOkToPlaceMidline() 
+    {
+        if(_passedPlacedLinePlateCount == 1)
+        {
+            if(Plate.CurrentFocusedPlate != null)
+            {
+                Line PlacedLine = Plate.CurrentFocusedPlate.PlacedLine;
+
+                if(PlacedLine == null)
+                {
+                    return false;
+                }
+
+                if(PlacedLine.IsEndOfLine(Plate.CurrentFocusedPlate.transform.position) == false)
+                {
+                    return false;
+                }
+
+                if(PlacedLine.GetLineStarterNode().IsSameColor(_lineRenderer.startColor) == false)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+
+        return _passedPlacedLinePlateCount == 0; 
     }
 
     public Node GetLineStarterNode() 
