@@ -104,7 +104,7 @@ public class LineCreator : Singleton<LineCreator>
     }
     private void PlaceCurrentLine()
     {
-        // Line 실제 배치
+        // Line 실제 배치 plate
         Plate focusedPlate = Plate.CurrentFocusedPlate;
 
         _currentHoldingLine.PlaceLineToMidPlates();
