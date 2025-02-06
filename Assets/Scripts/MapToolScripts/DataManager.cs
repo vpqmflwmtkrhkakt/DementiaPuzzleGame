@@ -28,6 +28,8 @@ public class SaveDataWrapper
     [SerializeField]
     private int _col;
 
+
+
     // 노드 인덱스, 노드 컬러
     public void AddSaveData(Vector2Int index, Vector2Int siblingIndex, Color nodeColor)
     {
@@ -51,12 +53,17 @@ public class SaveDataWrapper
 
 public class DataManager : Singleton<DataManager>
 {
+    [SerializeField]
+    private WarningMsgUI _msgUI;
+
     private PlateCreator _plateCreator;
     private string _saveLoadPath;
 
     private void Start()
     {
         _saveLoadPath = Application.persistentDataPath + "/";
+
+        Debug.Assert(_msgUI != null);
     }
     public void SaveCurrentMap(string saveFileName)
     {
@@ -78,6 +85,12 @@ public class DataManager : Singleton<DataManager>
         wrapper.SetPlateNums(_plateCreator.PlatesNum);
 
         List<List<ToolPlate>> plateList = _plateCreator.GetPlateList();
+
+        if(plateList.Count <= 0)
+        {
+            _msgUI.ShowMessage("There is no Plates To Save");
+            return;
+        }
 
         LinkedList<string> saveDataList = new LinkedList<string> ();
 
@@ -113,7 +126,7 @@ public class DataManager : Singleton<DataManager>
         }
         else
         {
-            Debug.Log("Node must be Placed at least One Pair");
+            _msgUI.ShowMessage("Node must be Placed at least One Pair");
         }
     }
 
