@@ -8,6 +8,7 @@ public class Line : MonoBehaviour
     private Node _lineStarterNode;
     private LinkedList<Plate> _enteredPlateList;
     private uint _passedPlacedLinePlateCount = 0;
+
     private void Awake()
     {
         _lineRenderer = GetComponentInChildren<LineRenderer>();
@@ -26,35 +27,57 @@ public class Line : MonoBehaviour
         Debug.Assert(_passedPlacedLinePlateCount >= 0, "passedPlateCount underflowed!"); 
     }
 
+    public void AddLineCount()
+    {
+        _lineRenderer.positionCount++;
+    }
+
+    public void EraseLastLine()
+    {
+        _lineRenderer.positionCount--;
+
+        if(_lineRenderer.positionCount <= 1)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public Vector2 GetLastLinePos()
+    {
+        return _lineRenderer.GetPosition( _lineRenderer.positionCount - 1);
+    }
+
+    public Vector2 GetLastPlacedLinePos()
+    {
+        return _lineRenderer.GetPosition(_lineRenderer.positionCount - 2);
+    }
+
     public bool IsOkToPlaceMidline() 
     {
-        if(_passedPlacedLinePlateCount == 1)
+        if(_passedPlacedLinePlateCount > 0)
         {
-            if(Plate.CurrentFocusedPlate != null)
-            {
-                Line PlacedLine = Plate.CurrentFocusedPlate.PlacedLine;
-
-                if(PlacedLine == null)
-                {
-                    return false;
-                }
-
-                if(PlacedLine.IsEndOfLine(Plate.CurrentFocusedPlate.transform.position) == false)
-                {
-                    return false;
-                }
-
-                if(PlacedLine.GetLineStarterNode().IsSameColor(_lineRenderer.startColor) == false)
-                {
-                    return false;
-                }
-
-                return true;
-            }
+            return false;
         }
 
+        if (Plate.CurrentFocusedPlate != null)
+        {
+            Line PlacedLine = Plate.CurrentFocusedPlate.PlacedLine;
 
-        return _passedPlacedLinePlateCount == 0; 
+            if (PlacedLine == null)
+            {
+                return true;
+            }
+
+            if (PlacedLine.IsEndOfLine(Plate.CurrentFocusedPlate.transform.position) == false ||
+                PlacedLine.GetLineStarterNode().IsSameColor(_lineRenderer.startColor) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public Node GetLineStarterNode() 
@@ -74,22 +97,20 @@ public class Line : MonoBehaviour
         _lineRenderer.endColor = lineColor;
     }
 
-    public void SetLinePosition(Vector3 startPos, Vector3 endPos)
+    public void SetLineInitPos(Vector3 startPos)
+    {
+        _lineRenderer.SetPosition(0, startPos);
+    }
+    public void SetLineEndPosition(Vector3 endPos)
     {
         Debug.Assert(_lineRenderer != null);
 
-        _lineRenderer.SetPosition(0, startPos);
-        _lineRenderer.SetPosition(1, endPos);
-    }
-
-    public void SetLineEndPosition(Vector3 endPos)
-    {
-        _lineRenderer.SetPosition(1, endPos);
+        _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, endPos);
     }
 
     public bool IsEndOfLine(Vector2 position)
     {
-        Vector2 lineEndPos = _lineRenderer.GetPosition(1);
+        Vector2 lineEndPos = _lineRenderer.GetPosition(_lineRenderer.positionCount - 1);
 
         return lineEndPos == position;
     }
@@ -110,9 +131,9 @@ public class Line : MonoBehaviour
 
     public bool IsPlateBehindLine(Vector3 platePosition)
     {
-        Vector2 drawingDirection = (_lineRenderer.GetPosition(0) - _lineRenderer.GetPosition(1)).normalized;
+        Vector2 drawingDirection = (_lineRenderer.GetPosition(_lineRenderer.positionCount - 1) - _lineRenderer.GetPosition(_lineRenderer.positionCount - 2)).normalized;
 
-        Vector2 fromPlatePosition = (platePosition - _lineRenderer.GetPosition(1)).normalized;
+        Vector2 fromPlatePosition = (platePosition - _lineRenderer.GetPosition(_lineRenderer.positionCount - 1)).normalized;
 
         return Vector2.Dot(fromPlatePosition, drawingDirection) < 0;
     }
