@@ -28,7 +28,6 @@ public class NodeCreator : MonoBehaviour
         node.SetColor(nodeColor);  
         _nodePlacer.SetHoldingNode(node);
     }
-
     public void LoadNode(Vector2Int placeIndex, Vector2Int siblingIndex, Color nodeColor)
     {
         ToolNode node = Instantiate(_nodePrefab, Vector3.zero, Quaternion.identity, null).GetComponent<ToolNode>();

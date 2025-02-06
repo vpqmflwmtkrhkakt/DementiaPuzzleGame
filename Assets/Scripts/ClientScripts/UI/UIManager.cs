@@ -5,11 +5,11 @@ using UnityEngine;
 public class UIManager : Singleton<UIManager>
 {
     [SerializeField]
-    private List<UIBase> _uiPrefabList;
+    private List<BaseUI> _uiPrefabList;
     [SerializeField]
     private GameObject _uiCanvas;
 
-    private Dictionary<string, UIBase> _uiContainer;
+    private Dictionary<string, BaseUI> _uiContainer;
     public void PopupUI(string uiName)
     {
         if(_uiContainer.ContainsKey(uiName) == false)
@@ -23,10 +23,10 @@ public class UIManager : Singleton<UIManager>
 
     private void Start()
     {
-        _uiContainer = new Dictionary<string, UIBase>();
-        foreach (UIBase uiPrefab in _uiPrefabList)
+        _uiContainer = new Dictionary<string, BaseUI>();
+        foreach (BaseUI uiPrefab in _uiPrefabList)
         {
-            UIBase ui = Instantiate(uiPrefab, _uiCanvas.transform);
+            BaseUI ui = Instantiate(uiPrefab, _uiCanvas.transform);
 
             _uiContainer.Add(uiPrefab.name, ui);
         }

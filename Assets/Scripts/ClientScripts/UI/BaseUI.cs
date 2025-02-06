@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UIBase : MonoBehaviour
+public class BaseUI : MonoBehaviour
 {
     [SerializeField]
     protected bool _isClosedWhenStart;

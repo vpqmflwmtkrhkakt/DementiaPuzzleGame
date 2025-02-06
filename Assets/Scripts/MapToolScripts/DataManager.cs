@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class SaveDataWrapper
     [SerializeField]
     private int _col;
 
+
+
     // 노드 인덱스, 노드 컬러
     public void AddSaveData(Vector2Int index, Vector2Int siblingIndex, Color nodeColor)
     {
@@ -50,12 +53,17 @@ public class SaveDataWrapper
 
 public class DataManager : Singleton<DataManager>
 {
+    [SerializeField]
+    private WarningMsgUI _msgUI;
+
     private PlateCreator _plateCreator;
     private string _saveLoadPath;
 
     private void Start()
     {
         _saveLoadPath = Application.persistentDataPath + "/";
+
+        Debug.Assert(_msgUI != null);
     }
     public void SaveCurrentMap(string saveFileName)
     {
@@ -68,16 +76,25 @@ public class DataManager : Singleton<DataManager>
 
         SaveDataWrapper wrapper = new SaveDataWrapper();
 
-        if(_plateCreator == null)
+
+        if (_plateCreator == null)
         {
             _plateCreator = GameObject.Find("PlateCreator").GetComponent<PlateCreator>();
             Debugger.CheckInstanceIsNullAndQuit(_plateCreator);
         }
-
         wrapper.SetPlateNums(_plateCreator.PlatesNum);
 
         List<List<ToolPlate>> plateList = _plateCreator.GetPlateList();
 
+        if(plateList.Count <= 0)
+        {
+            _msgUI.ShowMessage("There is no Plates To Save");
+            return;
+        }
+
+        LinkedList<string> saveDataList = new LinkedList<string> ();
+
+        int saveNodeCount = 0;
         foreach (List<ToolPlate> list in plateList)
         {
             foreach (ToolPlate plate in list)
@@ -90,11 +107,26 @@ public class DataManager : Singleton<DataManager>
                     Vector2Int siblingIndex = _plateCreator.GetPlateIndex(node.SiblingNode.transform.position);
                     Color nodeColor = node.GetColor();
                     wrapper.AddSaveData(nodeIndex, siblingIndex, nodeColor);
+                    ++saveNodeCount;
                 }
             }
 
             string jsonData = JsonUtility.ToJson(wrapper);
-            File.WriteAllText(saveFilePath, jsonData);
+
+            saveDataList.AddLast(jsonData);
+        }
+
+
+        if(saveNodeCount >= 2 && saveNodeCount % 2 == 0)
+        {
+            foreach (string saveData in saveDataList)
+            {
+                File.WriteAllText(saveFilePath, saveData);
+            }
+        }
+        else
+        {
+            _msgUI.ShowMessage("Node must be Placed at least One Pair");
         }
     }
 

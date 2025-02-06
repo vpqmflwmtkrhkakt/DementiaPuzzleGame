@@ -73,7 +73,7 @@ public class NodePlacer : Singleton<NodePlacer>
         }
 
         ToolPlate plate = _plateCreator.GetPlateByIndex(placeIndex);
-        plate.SetPlacedNode(placeNode);
+        plate.PlaceNode(placeNode);
 
         ToolPlate siblingNodePlate = _plateCreator.GetPlateByIndex(siblingNodeIndex);
         ToolNode siblingNode = siblingNodePlate.GetPlacedNode();
@@ -104,7 +104,7 @@ public class NodePlacer : Singleton<NodePlacer>
             return;
         }
 
-        _focusingPlate.SetPlacedNode(_holdingNode);
+        _focusingPlate.PlaceNode(_holdingNode);
 
         if(_holdingNode.SiblingNode == null)
         {

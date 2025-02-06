@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameClearUI : UIBase
+public class GameClearUI : BaseUI
 {
     private Button _retryBtn;
     private void Awake()
