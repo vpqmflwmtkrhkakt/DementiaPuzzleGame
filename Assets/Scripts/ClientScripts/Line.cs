@@ -6,7 +6,8 @@ public class Line : MonoBehaviour
 {
     private LineRenderer _lineRenderer;
     private Node _lineStarterNode;
-    private LinkedList<Plate> _enteredPlateList;
+    private LinkedList<Plate> _currentEnteredPlateList;
+    private Dictionary<int, LinkedList<Plate>> _placedPlateList; // fix : ÀÌ¸§ ¸¾¿¡¾Èµê
     private uint _passedPlacedLinePlateCount = 0;
 
     private void Awake()
@@ -15,32 +16,10 @@ public class Line : MonoBehaviour
 
         Debugger.CheckInstanceIsNullAndQuit( _lineRenderer );
 
-        _enteredPlateList = new LinkedList<Plate>();
-    }
-    public void AddPassedPlacedLinePlateCount() 
-    {
-        _passedPlacedLinePlateCount++; 
-    }
-    public void MinusPassedPlacedLinePlateCount() 
-    { 
-        _passedPlacedLinePlateCount--; 
-        Debug.Assert(_passedPlacedLinePlateCount >= 0, "passedPlateCount underflowed!"); 
+        _currentEnteredPlateList = new LinkedList<Plate>();
+        _placedPlateList = new Dictionary<int, LinkedList<Plate>>();
     }
 
-    public void AddLineCount()
-    {
-        _lineRenderer.positionCount++;
-    }
-
-    public void EraseLastLine()
-    {
-        _lineRenderer.positionCount--;
-
-        if(_lineRenderer.positionCount <= 1)
-        {
-            Destroy(this.gameObject);
-        }
-    }
 
     public Vector2 GetLastLinePos()
     {
@@ -119,14 +98,14 @@ public class Line : MonoBehaviour
     {
         Debug.Assert(plate != null);
 
-        _enteredPlateList.AddLast(plate);
+        _currentEnteredPlateList.AddLast(plate);
     }
 
     public void RemoveEnteredPlate(Plate plate)
     {
         Debug.Assert(plate != null);
 
-        _enteredPlateList.Remove(plate);
+        _currentEnteredPlateList.Remove(plate);
     }
 
     public bool IsPlateBehindLine(Vector3 platePosition)
@@ -137,13 +116,55 @@ public class Line : MonoBehaviour
 
         return Vector2.Dot(fromPlatePosition, drawingDirection) < 0;
     }
+    public void AddPassedPlacedLinePlateCount()
+    {
+        _passedPlacedLinePlateCount++;
+    }
+    public void MinusPassedPlacedLinePlateCount()
+    {
+        _passedPlacedLinePlateCount--;
+        Debug.Assert(_passedPlacedLinePlateCount >= 0, "passedPlateCount underflowed!");
+    }
 
+    public void AddLineCount()
+    {
+        _lineRenderer.positionCount++;
+    }
+
+    public void EraseLastLine()
+    {
+        _lineRenderer.positionCount--;
+
+        if(_placedPlateList.ContainsKey(_lineRenderer.positionCount))
+        {
+            foreach (Plate plate in _placedPlateList[_lineRenderer.positionCount])
+            {
+                plate.ClearMidLine();
+            }
+            _placedPlateList[_lineRenderer.positionCount].Clear();
+        }
+
+        if (_lineRenderer.positionCount <= 1)
+        {
+            Destroy(this.gameObject);
+        }
+    }
     public void PlaceLineToMidPlates()
     {
-        foreach (Plate midPlate in _enteredPlateList)
+        foreach (Plate midPlate in _currentEnteredPlateList)
         {
             midPlate.PlaceMidLine(this);
         }
+
+        int index = _lineRenderer.positionCount - 1;
+        if (_placedPlateList.ContainsKey(index) == false)
+        {
+            _placedPlateList.Add(index, null);
+        }
+
+        _placedPlateList[index] = _currentEnteredPlateList;
+
+        _currentEnteredPlateList = new LinkedList<Plate>();
     }
 
     private void OnDisable()
@@ -151,11 +172,23 @@ public class Line : MonoBehaviour
         _lineStarterNode = null;
         _passedPlacedLinePlateCount = 0;
 
-        foreach (Plate midplate in _enteredPlateList)
+        foreach(var pair in _placedPlateList)
+        {
+            foreach(Plate plate in pair.Value)
+            {
+                plate.ClearMidLine();
+            }
+
+            pair.Value.Clear();
+        }
+
+        _placedPlateList.Clear();
+
+        foreach (Plate midplate in _currentEnteredPlateList)
         {
             midplate.ClearMidLine();
         }
 
-        _enteredPlateList.Clear();
+        _currentEnteredPlateList.Clear();
     }
 }

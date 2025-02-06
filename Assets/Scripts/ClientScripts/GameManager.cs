@@ -4,6 +4,7 @@ public class GameManager : Singleton<GameManager>
 {
     private uint _remainConnection;
     public Action OnGameCleared;
+    public Action OnLevelChange;
 
     private void Start()
     {

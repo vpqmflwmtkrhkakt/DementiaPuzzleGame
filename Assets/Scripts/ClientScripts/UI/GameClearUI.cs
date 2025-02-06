@@ -17,6 +17,7 @@ public class GameClearUI : BaseUI
 
     private void RetryThisRound()
     {
+        // fix : 이걸 ui에서 직접 부르는건 좀...
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
