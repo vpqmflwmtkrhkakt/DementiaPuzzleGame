@@ -12,6 +12,7 @@ public class LineCreator : Singleton<LineCreator>
     private Vector3 _lastLineEndPos;
     private LinkedList<Line> _placedLineChain = new LinkedList<Line>();
 
+    public bool IsHoldingLine() { return _currentHoldingLine != null; }
     private void Start()
     {
         GameManager.Instance.OnGameCleared += ResetLineCreator;
@@ -22,37 +23,44 @@ public class LineCreator : Singleton<LineCreator>
         _lastLineEndPos = Vector3.zero;
         _placedLineChain.Clear();
     }
-    public void AddPlateToMidlineList(Plate plate)
+    public void AddOrRemoveFromMidlineList(Plate plate)
     {
         if(_currentHoldingLine == null)
         {
             return;
         }
 
-        if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
+        if(plate.HasEntered == false)
         {
-            if (plate.PlacedLine != null)
+            return;
+        }
+
+        if (_currentHoldingLine.GetLastPlacedLinePos().Equals(plate.transform.position))
+        {
+            return;
+        }
+
+
+        bool isPlatePassed = _currentHoldingLine.IsPlateBehindLine(plate.transform.position);
+
+        // entered 했었던 plate만 하도록??
+        if (isPlatePassed == true)
+        {
+            // 플레이트를 넘어서 지나침
+            if (plate.PlacedLine != null || plate.PlacedNode != null)
             {
                 _currentHoldingLine.AddPassedPlacedLinePlateCount();
+                Debug.Log(plate.gameObject.name + "has exited");
             }
             else
             {
                 _currentHoldingLine.AddEnteredPlate(plate);
             }
         }
-    }
-
-    public void RemovePlateFromMidlineList(Plate plate)
-    {
-        if(_currentHoldingLine == null)
+        else
         {
-            return;
-        }
-        // 현재 그리는 방향과 역방향이면 Remove
-        // 역방향 판단은 내적으로
-        if(_currentHoldingLine.IsPlateBehindLine(plate.transform.position) == true)
-        {
-            if (plate.PlacedLine != null)
+            // 플레이트를 넘어서 지나침
+            if (plate.PlacedLine != null || plate.PlacedNode != null)
             {
                 _currentHoldingLine.MinusPassedPlacedLinePlateCount();
             }
@@ -62,7 +70,6 @@ public class LineCreator : Singleton<LineCreator>
             }
         }
     }
-
     public void StartDrawLine(Vector3 lineStartPos, Node lineStarterNode)
     {
         if(lineStarterNode == null)
@@ -70,15 +77,22 @@ public class LineCreator : Singleton<LineCreator>
             Debug.LogError("lineStarterNode is null");
             return;
         }
-        LineStartPos = lineStartPos;
-
-        _currentHoldingLine = Instantiate(_linePrefab, lineStartPos, Quaternion.identity, transform).GetComponent<Line>();
-        _currentHoldingLine.SetLineStarterNode(lineStarterNode);
-        _currentHoldingLine.SetLineColor(lineStarterNode.GetNodeColor());
 
         if(lineStarterNode.DrawingLine == null)
         {
+            _currentHoldingLine = Instantiate(_linePrefab, lineStartPos, Quaternion.identity, transform).GetComponent<Line>();
+            _currentHoldingLine.SetLineStarterNode(lineStarterNode);
+            _currentHoldingLine.SetLineColor(lineStarterNode.GetNodeColor());
+            _currentHoldingLine.SetLineInitPos(lineStartPos);
             lineStarterNode.ConnectLine(_currentHoldingLine);
+
+            LineStartPos = lineStartPos;
+        }
+        else
+        {
+            _currentHoldingLine = lineStarterNode.DrawingLine;
+            LineStartPos = _currentHoldingLine.GetLastLinePos();
+            _currentHoldingLine.AddLineCount();
         }
     }
     public void StopDrawLine()
@@ -92,8 +106,7 @@ public class LineCreator : Singleton<LineCreator>
 
         if (CheckIsLinePlaceable() == false)
         {
-            // Fix : 추후 라인들은 메모리풀로 재사용할수있도록 ㄱㄱ
-            Destroy(_currentHoldingLine.gameObject);
+            _currentHoldingLine.EraseLastLine();
         }
         else
         {
@@ -147,10 +160,19 @@ public class LineCreator : Singleton<LineCreator>
                 return true;
             }
 
+            Node node = placedLine.GetLineStarterNode();
+
+            if(node.IsConnected() == true)
+            {
+                return false;
+            }
+
             if(placedLine.IsEndOfLine(focusedPlate.transform.position) == false)
             {
                 return false;
             }
+
+            
 
             return placedLine.GetLineStarterNode().IsSameColor(_currentHoldingLine.GetLineStarterNode().GetNodeColor());
         }
@@ -181,7 +203,7 @@ public class LineCreator : Singleton<LineCreator>
 
         if (_currentHoldingLine != null)
         {
-            _currentHoldingLine.SetLinePosition(LineStartPos, lineEndPos);
+            _currentHoldingLine.SetLineEndPosition(lineEndPos);
         }
     }
 
@@ -224,10 +246,21 @@ public class LineCreator : Singleton<LineCreator>
 
         Line removeLine = _placedLineChain.Last.Value;
 
-        // placedLine 모두 Displaced해야
-        // 연결되었던 node들 다시 disconnected해야
+        Node connectedNode = removeLine.GetLineStarterNode();
 
+        if (connectedNode.IsConnected())
+        {
+            Node oppositNode = connectedNode.GetConnectedNode();
+            Debug.Assert(oppositNode != null, "opposit node is null");
+
+            oppositNode.DisconnectNode();
+            connectedNode.DisconnectNode();
+            Debug.Log("Disconnecetd!");
+
+            GameManager.Instance.PlusRemainingConnectionCount();
+        }
+        
         _placedLineChain.RemoveLast();
-        Destroy(removeLine.gameObject);
+        removeLine.EraseLastLine();
     }
 }

@@ -8,6 +8,8 @@ public class Plate : MonoBehaviour
 
     public static Plate CurrentFocusedPlate { get; private set; }
 
+    public bool HasEntered { get; private set; }
+
     [SerializeField]
     private TextMeshPro _debugText;
 
@@ -26,9 +28,10 @@ public class Plate : MonoBehaviour
     {
         CurrentFocusedPlate = this;
 
-        if(PlacedNode == null)
+        if(LineCreator.Instance.IsHoldingLine() == true)
         {
-            LineCreator.Instance.AddPlateToMidlineList(this);
+            Debug.Log(this.gameObject.name + "has entered");
+            HasEntered = true;
         }
     }
 
@@ -36,10 +39,8 @@ public class Plate : MonoBehaviour
     {
         CurrentFocusedPlate = null;
 
-        if (PlacedLine == null && PlacedNode == null)
-        {
-            LineCreator.Instance.RemovePlateFromMidlineList(this);
-        }
+        LineCreator.Instance.AddOrRemoveFromMidlineList(this);
+        HasEntered = false;
     }
 
     private void OnMouseDown()
@@ -59,8 +60,14 @@ public class Plate : MonoBehaviour
         else if (PlacedLine != null && PlacedLine.IsEndOfLine(transform.position) == true)
         {
             Node startNode = PlacedLine.GetLineStarterNode();
-            LineCreator.Instance.StartDrawLine(transform.position, startNode);
+
+            if(startNode.IsConnected() == false)
+            {
+                LineCreator.Instance.StartDrawLine(transform.position, startNode);
+            }
         }
+
+        HasEntered = false;
     }
 
     private void OnMouseUp()
@@ -88,19 +95,32 @@ public class Plate : MonoBehaviour
     {
         Debug.Assert(line != null, "Placing line is null!");
 
-        if(PlacedLine == null)
-        {
-            PlacedLine = line;
-        }
-
         line.SetLineEndPosition(new Vector3(transform.position.x, transform.position.y, 0f));
 
-        if(PlacedNode != null)
+        if (PlacedNode != null)
         {
             Debug.Assert(line.GetLineStarterNode().GetNodeColor() == PlacedNode.GetNodeColor(), "Node Color is Different");
 
             PlacedNode.ConnectLine(line);
+            Node oppositNode = line.GetLineStarterNode();
+            oppositNode.ConnectNode(PlacedNode);
+            PlacedNode.ConnectNode(oppositNode);
+
             GameManager.Instance.MinusRemainingConnectionCount();
+        }
+        else if(PlacedLine != null)
+        {
+            Node oppositNode = line.GetLineStarterNode();
+            Node placeLineNode = PlacedLine.GetLineStarterNode();
+
+            oppositNode.ConnectNode(placeLineNode);
+            placeLineNode.ConnectNode(oppositNode);
+
+            GameManager.Instance.MinusRemainingConnectionCount();
+        }
+        else
+        {
+            PlacedLine = line;
         }
     }
 }
