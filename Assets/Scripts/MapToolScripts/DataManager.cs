@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -68,16 +69,19 @@ public class DataManager : Singleton<DataManager>
 
         SaveDataWrapper wrapper = new SaveDataWrapper();
 
-        if(_plateCreator == null)
+
+        if (_plateCreator == null)
         {
             _plateCreator = GameObject.Find("PlateCreator").GetComponent<PlateCreator>();
             Debugger.CheckInstanceIsNullAndQuit(_plateCreator);
         }
-
         wrapper.SetPlateNums(_plateCreator.PlatesNum);
 
         List<List<ToolPlate>> plateList = _plateCreator.GetPlateList();
 
+        LinkedList<string> saveDataList = new LinkedList<string> ();
+
+        int saveNodeCount = 0;
         foreach (List<ToolPlate> list in plateList)
         {
             foreach (ToolPlate plate in list)
@@ -90,11 +94,26 @@ public class DataManager : Singleton<DataManager>
                     Vector2Int siblingIndex = _plateCreator.GetPlateIndex(node.SiblingNode.transform.position);
                     Color nodeColor = node.GetColor();
                     wrapper.AddSaveData(nodeIndex, siblingIndex, nodeColor);
+                    ++saveNodeCount;
                 }
             }
 
             string jsonData = JsonUtility.ToJson(wrapper);
-            File.WriteAllText(saveFilePath, jsonData);
+
+            saveDataList.AddLast(jsonData);
+        }
+
+
+        if(saveNodeCount >= 2 && saveNodeCount % 2 == 0)
+        {
+            foreach (string saveData in saveDataList)
+            {
+                File.WriteAllText(saveFilePath, saveData);
+            }
+        }
+        else
+        {
+            Debug.Log("Node must be Placed at least One Pair");
         }
     }
 

@@ -50,7 +50,7 @@ public class ToolPlate : MonoBehaviour
         return _placedNode == null;
     }
 
-    public void SetPlacedNode(ToolNode node)
+    public void PlaceNode(ToolNode node)
     {
         if(node == null)
         {
