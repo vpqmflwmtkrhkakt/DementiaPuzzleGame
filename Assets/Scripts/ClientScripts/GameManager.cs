@@ -5,7 +5,14 @@ public class GameManager : Singleton<GameManager>
     private uint _remainConnection;
     public Action OnGameCleared;
     public Action OnLevelChange;
+    public Action<uint> OnActionCountChanged;
+    private uint _actCount = 0;
 
+    public void IncreaseActCount() 
+    {  
+        ++_actCount;
+        OnActionCountChanged(_actCount);
+    }
     private void Start()
     {
         LevelManager.Instance.LoadLevel("save");

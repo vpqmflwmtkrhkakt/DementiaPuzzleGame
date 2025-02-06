@@ -5,7 +5,7 @@ public class BaseUI : MonoBehaviour
     [SerializeField]
     protected bool _isClosedWhenStart;
 
-    private void Start()
+    protected virtual void Start()
     {
         if(_isClosedWhenStart == true)
         {

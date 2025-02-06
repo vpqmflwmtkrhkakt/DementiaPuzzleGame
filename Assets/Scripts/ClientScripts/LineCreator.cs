@@ -13,10 +13,10 @@ public class LineCreator : Singleton<LineCreator>
     private LinkedList<Line> _placedLineChain = new LinkedList<Line>();
 
     public bool IsHoldingLine() { return _currentHoldingLine != null; }
-    private void Start()
-    {
-        //GameManager.Instance.OnLevelChange += ResetLineCreator;
-    }
+    //private void Start()
+    //{
+    //    //GameManager.Instance.OnLevelChange += ResetLineCreator;
+    //}
     private void ResetLineCreator()
     {
         _currentHoldingLine = null;
@@ -110,6 +110,7 @@ public class LineCreator : Singleton<LineCreator>
         else
         {
             PlaceHoldingLine();
+            GameManager.Instance.IncreaseActCount();
         }
 
         _currentHoldingLine = null;
@@ -265,9 +266,9 @@ public class LineCreator : Singleton<LineCreator>
             GameManager.Instance.PlusRemainingConnectionCount();
         }
 
-
-        
         _placedLineChain.RemoveLast();
         removeLine.EraseLastLine();
+
+        GameManager.Instance.IncreaseActCount();
     }
 }

@@ -267,6 +267,7 @@ MonoBehaviour:
   _uiPrefabList:
   - {fileID: 2349325568151609221, guid: 0687b8760615b21439073c6cd428ae64, type: 3}
   - {fileID: 6787815677928765833, guid: e1ac81ccf7160e346a3938f90e284d5f, type: 3}
+  - {fileID: 1175028264058825879, guid: 4ac23624b4e79d94b942fd842d74f2a8, type: 3}
   _uiCanvas: {fileID: 906703748}
 --- !u!4 &456593887
 Transform:
