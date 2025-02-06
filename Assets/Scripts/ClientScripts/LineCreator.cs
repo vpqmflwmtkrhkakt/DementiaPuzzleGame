@@ -50,7 +50,6 @@ public class LineCreator : Singleton<LineCreator>
             if (plate.PlacedLine != null || plate.PlacedNode != null)
             {
                 _currentHoldingLine.AddPassedPlacedLinePlateCount();
-                Debug.Log(plate.gameObject.name + "has exited");
             }
             else
             {
@@ -255,7 +254,6 @@ public class LineCreator : Singleton<LineCreator>
 
             oppositNode.DisconnectNode();
             connectedNode.DisconnectNode();
-            Debug.Log("Disconnecetd!");
 
             GameManager.Instance.PlusRemainingConnectionCount();
         }

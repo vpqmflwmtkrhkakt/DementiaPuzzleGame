@@ -30,7 +30,6 @@ public class Plate : MonoBehaviour
 
         if(LineCreator.Instance.IsHoldingLine() == true)
         {
-            Debug.Log(this.gameObject.name + "has entered");
             HasEntered = true;
         }
     }
