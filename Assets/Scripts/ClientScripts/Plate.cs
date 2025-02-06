@@ -117,9 +117,5 @@ public class Plate : MonoBehaviour
 
             GameManager.Instance.MinusRemainingConnectionCount();
         }
-        else
-        {
-            PlacedLine = line;
-        }
     }
 }

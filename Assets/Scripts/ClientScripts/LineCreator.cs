@@ -15,7 +15,7 @@ public class LineCreator : Singleton<LineCreator>
     public bool IsHoldingLine() { return _currentHoldingLine != null; }
     private void Start()
     {
-        GameManager.Instance.OnGameCleared += ResetLineCreator;
+        //GameManager.Instance.OnLevelChange += ResetLineCreator;
     }
     private void ResetLineCreator()
     {
@@ -109,18 +109,25 @@ public class LineCreator : Singleton<LineCreator>
         }
         else
         {
-            PlaceCurrentLine();
+            PlaceHoldingLine();
         }
 
         _currentHoldingLine = null;
     }
-    private void PlaceCurrentLine()
+    private void PlaceHoldingLine()
     {
         // Line 실제 배치 plate
         Plate focusedPlate = Plate.CurrentFocusedPlate;
 
-        _currentHoldingLine.PlaceLineToMidPlates();
+        if (focusedPlate.PlacedNode == null && focusedPlate.PlacedLine == null)
+        {
+            _currentHoldingLine.AddEnteredPlate(focusedPlate);
+        }
+
         focusedPlate.PlaceEndLine(_currentHoldingLine);
+
+        _currentHoldingLine.PlaceLineToMidPlates();
+
 
         _placedLineChain.AddLast(_currentHoldingLine);
     }
@@ -257,6 +264,8 @@ public class LineCreator : Singleton<LineCreator>
 
             GameManager.Instance.PlusRemainingConnectionCount();
         }
+
+
         
         _placedLineChain.RemoveLast();
         removeLine.EraseLastLine();
