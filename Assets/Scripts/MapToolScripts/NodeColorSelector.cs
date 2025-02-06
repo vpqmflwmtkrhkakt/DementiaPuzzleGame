@@ -52,6 +52,11 @@ public class NodeColorSelector : MonoBehaviour, IPointerClickHandler
         // 클릭한 위치의 픽셀 색상 가져오기
         Color selectedColor = _colorTexture.GetPixel(x, y);
 
+        if(selectedColor.a < 1)
+        {
+            return;
+        }
+
         // Creater UI에 넘기기
         _nodeColorUI.SetNodeColor(selectedColor);
     }
